@@ -28,9 +28,19 @@ const Renderer = {
 
   // Check if data contains AAMVA / driver license / ID patterns
   // Works across ALL code types — not limited to PDF417/Aztec
+  // SKIP detection for URLs to avoid false positives on path segments
   isRestrictedIDType(dataOverride) {
-    const data = (dataOverride || this._getDataForDetection() || '').toUpperCase();
+    const raw = dataOverride || this._getDataForDetection() || '';
+    const data = raw.toUpperCase();
     if (!data || data.length < 5) return false;
+
+    // ── URL EXEMPTION: Never flag URLs (http://, https://, www., or bare domain.tld/path) ──
+    const trimmed = raw.trim();
+    if (/^https?:\/\//i.test(trimmed)) return false;
+    if (/^www\./i.test(trimmed)) return false;
+    if (/^[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+\/?/i.test(trimmed)) return false;
+    // Also skip if data contains a URL anywhere as the primary content
+    if (/https?:\/\/[^\s]+/i.test(trimmed) && trimmed.split('\n').length <= 2) return false;
 
     // ── HIGH CONFIDENCE: Block immediately ──
 

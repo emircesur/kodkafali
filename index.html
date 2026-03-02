@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KODKAFALI — Ultimate Code Generator (100+ Types)</title>
+  <meta name="description" content="Generate 100+ QR codes, barcodes, and scannable codes entirely in your browser. Zero server, 100% private.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.1.1/dist/bwip-js-min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">⟨/⟩</span>
+          <span class="logo-text">KODKAFALI</span>
+          <span class="logo-badge" id="typeBadge">100+ Types</span>
+        </div>
+        <nav class="header-nav">
+          <button class="nav-btn active" data-section="generator">
+            <i data-lucide="qr-code" class="nav-icon"></i>
+            <span>Generator</span>
+          </button>
+          <button class="nav-btn" data-section="batch">
+            <i data-lucide="layers" class="nav-icon"></i>
+            <span>Batch</span>
+          </button>
+          <button class="nav-btn" data-section="about">
+            <i data-lucide="shield-check" class="nav-icon"></i>
+            <span>Privacy</span>
+          </button>
+        </nav>
+        <div class="header-actions">
+          <button id="themeToggle" class="icon-btn" title="Toggle theme">
+            <i data-lucide="moon" id="themeIcon"></i>
+          </button>
+          <div class="privacy-indicator" id="privacyIndicator" title="Privacy Mode Active — No data leaves your browser">
+            <i data-lucide="shield-check"></i>
+            <span>Private</span>
+          </div>
+          <a href="https://github.com/emircesur" target="_blank" rel="noopener noreferrer" class="github-link" title="GitHub — emircesur">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Generator Section -->
+      <section id="generatorSection" class="section active">
+        <div class="generator-layout">
+          <!-- Left Panel: Controls -->
+          <div class="controls-panel">
+            <!-- Code Type Selector (Dynamic) -->
+            <div class="panel-card">
+              <h3 class="panel-title">
+                <i data-lucide="settings-2"></i>
+                Code Type
+                <span class="type-count-badge" id="typeCountBadge"></span>
+              </h3>
+
+              <!-- Search -->
+              <div class="type-search">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="typeSearch" placeholder="Search 100+ code types..." autocomplete="off">
+                <span id="typeSearchCount" class="search-count"></span>
+              </div>
+
+              <!-- Popular Quick Access -->
+              <div class="type-quick-access" id="popularTypes">
+                <span class="category-label">⚡ Popular</span>
+                <div class="type-buttons" id="popularTypeButtons"></div>
+              </div>
+
+              <!-- Featured / New -->
+              <div class="type-quick-access" id="featuredTypes">
+                <span class="category-label">🔥 New &amp; Featured</span>
+                <div class="type-buttons" id="featuredTypeButtons"></div>
+              </div>
+
+              <!-- All Categories (Collapsible) -->
+              <div id="allCategories" class="all-categories"></div>
+            </div>
+
+            <!-- Data Templates -->
+            <div class="panel-card">
+              <h3 class="panel-title">
+                <i data-lucide="file-text"></i>
+                Data Template
+              </h3>
+              <div class="template-selector">
+                <select id="dataTemplate">
+                  <optgroup label="General">
+                    <option value="text">Plain Text / URL</option>
+                  </optgroup>
+                  <optgroup label="Contact &amp; Communication">
+                    <option value="wifi">WiFi Network</option>
+                    <option value="vcard">vCard (Contact)</option>
+                    <option value="event">Calendar Event</option>
+                    <option value="email">Email</option>
+                    <option value="sms">SMS</option>
+                    <option value="phone">Phone Call</option>
+                    <option value="geo">Geolocation</option>
+                  </optgroup>
+                  <optgroup label="Payment Standards">
+                    <option value="crypto">Crypto (BTC/ETH)</option>
+                    <option value="epcqr">EPC QR (SEPA Europe)</option>
+                    <option value="swissqr">Swiss QR-Bill</option>
+                    <option value="upiqr">UPI QR (India)</option>
+                    <option value="pixqr">PIX QR (Brazil)</option>
+                  </optgroup>
+                  <optgroup label="Identity &amp; Travel">
+                    <option value="boardingpass">Boarding Pass (BCBP)</option>
+                  </optgroup>
+                  <optgroup label="GS1 Standards">
+                    <option value="gs1digital">GS1 Digital Link</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <!-- Text Input -->
+              <div id="tmpl-text" class="template-fields active">
+                <div class="field-group">
+                  <label>Content</label>
+                  <textarea id="dataInput" rows="4" placeholder="Enter text, URL, or any data...">https://github.com/emircesur</textarea>
+                </div>
+              </div>
+
+              <!-- WiFi Template -->
+              <div id="tmpl-wifi" class="template-fields">
+                <div class="field-group">
+                  <label>Network Name (SSID)</label>
+                  <input type="text" id="wifiSSID" placeholder="MyNetwork">
+                </div>
+                <div class="field-group">
+                  <label>Security</label>
+                  <select id="wifiSecurity">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">None</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label>Password</label>
+                  <input type="password" id="wifiPassword" placeholder="Password">
+                </div>
+                <div class="field-group inline">
+                  <label><input type="checkbox" id="wifiHidden"> Hidden Network</label>
+                </div>
+              </div>
+
+              <!-- vCard Template -->
+              <div id="tmpl-vcard" class="template-fields">
+                <div class="field-row">
+                  <div class="field-group"><label>First Name</label><input type="text" id="vcardFirstName" placeholder="John"></div>
+                  <div class="field-group"><label>Last Name</label><input type="text" id="vcardLastName" placeholder="Doe"></div>
+                </div>
+                <div class="field-group"><label>Organization</label><input type="text" id="vcardOrg" placeholder="Company Inc."></div>
+                <div class="field-group"><label>Title</label><input type="text" id="vcardTitle" placeholder="Software Engineer"></div>
+                <div class="field-group"><label>Phone</label><input type="tel" id="vcardPhone" placeholder="+1234567890"></div>
+                <div class="field-group"><label>Email</label><input type="email" id="vcardEmail" placeholder="john@example.com"></div>
+                <div class="field-group"><label>Website</label><input type="url" id="vcardURL" placeholder="https://example.com"></div>
+                <div class="field-group"><label>Address</label><input type="text" id="vcardAddress" placeholder="123 Main St, City, Country"></div>
+              </div>
+
+              <!-- Event Template -->
+              <div id="tmpl-event" class="template-fields">
+                <div class="field-group"><label>Event Title</label><input type="text" id="eventTitle" placeholder="Team Meeting"></div>
+                <div class="field-group"><label>Location</label><input type="text" id="eventLocation" placeholder="Conference Room A"></div>
+                <div class="field-row">
+                  <div class="field-group"><label>Start</label><input type="datetime-local" id="eventStart"></div>
+                  <div class="field-group"><label>End</label><input type="datetime-local" id="eventEnd"></div>
+                </div>
+                <div class="field-group"><label>Description</label><textarea id="eventDescription" rows="2" placeholder="Event description..."></textarea></div>
+              </div>
+
+              <!-- Email Template -->
+              <div id="tmpl-email" class="template-fields">
+                <div class="field-group"><label>Email Address</label><input type="email" id="emailTo" placeholder="hello@example.com"></div>
+                <div class="field-group"><label>Subject</label><input type="text" id="emailSubject" placeholder="Hello!"></div>
+                <div class="field-group"><label>Body</label><textarea id="emailBody" rows="3" placeholder="Message body..."></textarea></div>
+              </div>
+
+              <!-- SMS Template -->
+              <div id="tmpl-sms" class="template-fields">
+                <div class="field-group"><label>Phone Number</label><input type="tel" id="smsPhone" placeholder="+1234567890"></div>
+                <div class="field-group"><label>Message</label><textarea id="smsBody" rows="3" placeholder="Your message..."></textarea></div>
+              </div>
+
+              <!-- Phone Template -->
+              <div id="tmpl-phone" class="template-fields">
+                <div class="field-group"><label>Phone Number</label><input type="tel" id="phoneNumber" placeholder="+1234567890"></div>
+              </div>
+
+              <!-- Crypto Template -->
+              <div id="tmpl-crypto" class="template-fields">
+                <div class="field-group"><label>Cryptocurrency</label><select id="cryptoType"><option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option></select></div>
+                <div class="field-group"><label>Address</label><input type="text" id="cryptoAddress" placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"></div>
+                <div class="field-group"><label>Amount (optional)</label><input type="text" id="cryptoAmount" placeholder="0.001"></div>
+                <div class="field-group"><label>Message (optional)</label><input type="text" id="cryptoMessage" placeholder="Payment for..."></div>
+              </div>
+
+              <!-- Geo Template -->
+              <div id="tmpl-geo" class="template-fields">
+                <div class="field-row">
+                  <div class="field-group"><label>Latitude</label><input type="number" id="geoLat" step="any" placeholder="40.7128"></div>
+                  <div class="field-group"><label>Longitude</label><input type="number" id="geoLon" step="any" placeholder="-74.0060"></div>
+                </div>
+              </div>
+
+              <!-- EPC QR (SEPA) Template -->
+              <div id="tmpl-epcqr" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>EPC QR codes enable instant SEPA bank transfers across Europe.</span></div>
+                <div class="field-group"><label>Beneficiary Name</label><input type="text" id="epcName" placeholder="John Doe"></div>
+                <div class="field-group"><label>IBAN</label><input type="text" id="epcIBAN" placeholder="DE89370400440532013000"></div>
+                <div class="field-group"><label>BIC/SWIFT</label><input type="text" id="epcBIC" placeholder="COBADEFFXXX"></div>
+                <div class="field-group"><label>Amount (EUR)</label><input type="number" id="epcAmount" step="0.01" placeholder="100.00"></div>
+                <div class="field-group"><label>Reference</label><input type="text" id="epcReference" placeholder="Invoice 2024-001"></div>
+                <div class="field-group"><label>Remittance Text (optional)</label><input type="text" id="epcText" placeholder="Payment for services"></div>
+              </div>
+
+              <!-- Swiss QR-Bill Template -->
+              <div id="tmpl-swissqr" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>Swiss QR-Bill — mandatory for all Swiss invoice payments since 2022.</span></div>
+                <div class="field-group"><label>Creditor Name</label><input type="text" id="swissName" placeholder="Max Muster AG"></div>
+                <div class="field-group"><label>IBAN (CH/LI)</label><input type="text" id="swissIBAN" placeholder="CH9300762011623852957"></div>
+                <div class="field-group"><label>Amount (CHF)</label><input type="number" id="swissAmount" step="0.01" placeholder="1500.00"></div>
+                <div class="field-row">
+                  <div class="field-group"><label>Street</label><input type="text" id="swissStreet" placeholder="Bahnhofstr. 1"></div>
+                  <div class="field-group"><label>Postal / City</label><input type="text" id="swissCity" placeholder="8001 Zürich"></div>
+                </div>
+                <div class="field-group"><label>Country</label><input type="text" id="swissCountry" placeholder="CH" value="CH" maxlength="2"></div>
+                <div class="field-group"><label>Reference Number (optional)</label><input type="text" id="swissRef" placeholder="210000000003139471430009017"></div>
+                <div class="field-group"><label>Additional Info</label><input type="text" id="swissAdditional" placeholder="Invoice Feb 2026"></div>
+              </div>
+
+              <!-- UPI QR (India) Template -->
+              <div id="tmpl-upiqr" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>UPI QR enables instant mobile payments in India via any UPI app.</span></div>
+                <div class="field-group"><label>UPI ID</label><input type="text" id="upiID" placeholder="merchant@upi"></div>
+                <div class="field-group"><label>Payee Name</label><input type="text" id="upiName" placeholder="Shop Name"></div>
+                <div class="field-group"><label>Amount (INR, optional)</label><input type="number" id="upiAmount" step="0.01" placeholder="500.00"></div>
+                <div class="field-group"><label>Transaction Note</label><input type="text" id="upiNote" placeholder="Payment for order #123"></div>
+              </div>
+
+              <!-- PIX QR (Brazil) Template -->
+              <div id="tmpl-pixqr" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>PIX — Brazil's instant payment system. Supports CPF, CNPJ, email, phone, or random key.</span></div>
+                <div class="field-group"><label>PIX Key</label><input type="text" id="pixKey" placeholder="CPF, CNPJ, email, phone, or UUID"></div>
+                <div class="field-group"><label>Merchant/Receiver Name</label><input type="text" id="pixName" placeholder="Loja do João"></div>
+                <div class="field-group"><label>City</label><input type="text" id="pixCity" placeholder="São Paulo"></div>
+                <div class="field-group"><label>Amount (BRL, optional)</label><input type="number" id="pixAmount" step="0.01" placeholder="150.00"></div>
+                <div class="field-group"><label>Description (optional)</label><input type="text" id="pixDescription" placeholder="Pagamento pedido 456"></div>
+              </div>
+
+              <!-- Boarding Pass Template -->
+              <div id="tmpl-boardingpass" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>BCBP format used on airline boarding passes. Best with PDF417 or Aztec codes.</span></div>
+                <div class="field-row">
+                  <div class="field-group"><label>Passenger Name</label><input type="text" id="bpName" placeholder="SMITH/JOHN" style="text-transform:uppercase"></div>
+                  <div class="field-group"><label>PNR / Booking Ref</label><input type="text" id="bpPNR" placeholder="ABC123" maxlength="7" style="text-transform:uppercase"></div>
+                </div>
+                <div class="field-row">
+                  <div class="field-group"><label>From (IATA)</label><input type="text" id="bpFrom" placeholder="JFK" maxlength="3" style="text-transform:uppercase"></div>
+                  <div class="field-group"><label>To (IATA)</label><input type="text" id="bpTo" placeholder="LAX" maxlength="3" style="text-transform:uppercase"></div>
+                </div>
+                <div class="field-row">
+                  <div class="field-group"><label>Airline Code</label><input type="text" id="bpAirline" placeholder="AA" maxlength="3" style="text-transform:uppercase"></div>
+                  <div class="field-group"><label>Flight Number</label><input type="text" id="bpFlight" placeholder="0100" maxlength="5"></div>
+                </div>
+                <div class="field-row">
+                  <div class="field-group"><label>Date (Julian/DDD)</label><input type="text" id="bpDate" placeholder="256" maxlength="3"></div>
+                  <div class="field-group"><label>Seat</label><input type="text" id="bpSeat" placeholder="012A" maxlength="4" style="text-transform:uppercase"></div>
+                </div>
+                <div class="field-group"><label>Class</label><select id="bpClass"><option value="Y">Economy (Y)</option><option value="J">Business (J)</option><option value="F">First (F)</option><option value="W">Premium Economy (W)</option></select></div>
+              </div>
+
+              <!-- GS1 Digital Link Template -->
+              <div id="tmpl-gs1digital" class="template-fields">
+                <div class="info-banner"><i data-lucide="info"></i><span>GS1 Digital Link — The 2027 standard replacing UPCs. URL that works at POS and web.</span></div>
+                <div class="field-group"><label>Domain</label><input type="text" id="gs1Domain" placeholder="id.example.com" value="id.gs1.org"></div>
+                <div class="field-group"><label>GTIN (Product Code)</label><input type="text" id="gs1GTIN" placeholder="09506000134376" maxlength="14"></div>
+                <div class="field-group"><label>Lot/Batch (optional)</label><input type="text" id="gs1Lot" placeholder="ABC123"></div>
+                <div class="field-group"><label>Serial Number (optional)</label><input type="text" id="gs1Serial" placeholder="12345"></div>
+                <div class="field-group"><label>Expiry Date (optional, YYMMDD)</label><input type="text" id="gs1Expiry" placeholder="261231" maxlength="6"></div>
+              </div>
+
+            </div>
+
+            <!-- QR Customization (only for QR codes) -->
+            <div class="panel-card" id="qrCustomization">
+              <h3 class="panel-title"><i data-lucide="palette"></i> Customization</h3>
+              <div class="customization-tabs">
+                <button class="cust-tab active" data-tab="colors">Colors</button>
+                <button class="cust-tab" data-tab="shapes">Shapes</button>
+                <button class="cust-tab" data-tab="logo">Logo</button>
+                <button class="cust-tab" data-tab="frame">Frame</button>
+              </div>
+              <div id="tab-colors" class="cust-tab-content active">
+                <div class="field-group"><label>Foreground Color</label><div class="color-input-row"><input type="color" id="fgColor" value="#000000"><input type="text" id="fgColorText" value="#000000" class="color-text"></div></div>
+                <div class="field-group"><label>Background Color</label><div class="color-input-row"><input type="color" id="bgColor" value="#FFFFFF"><input type="text" id="bgColorText" value="#FFFFFF" class="color-text"></div></div>
+                <div class="field-group"><label>Eye Color (corners)</label><div class="color-input-row"><input type="color" id="eyeColor" value="#000000"><input type="text" id="eyeColorText" value="#000000" class="color-text"><label class="small-label"><input type="checkbox" id="eyeColorEnabled"> Custom</label></div></div>
+                <div class="field-group"><label>Gradient</label><select id="gradientType"><option value="none">None</option><option value="linear">Linear Gradient</option><option value="radial">Radial Gradient</option></select></div>
+                <div id="gradientColors" class="hidden"><div class="field-group"><label>Gradient End Color</label><div class="color-input-row"><input type="color" id="gradientEnd" value="#0066FF"><input type="text" id="gradientEndText" value="#0066FF" class="color-text"></div></div></div>
+                <div id="contrastWarning" class="warning-banner hidden"><i data-lucide="alert-triangle"></i><span>Low contrast detected! The code may not scan reliably.</span></div>
+              </div>
+              <div id="tab-shapes" class="cust-tab-content">
+                <div class="field-group"><label>Body Shape</label><div class="shape-options"><button class="shape-btn active" data-shape="square" title="Square"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="currentColor"/></svg></button><button class="shape-btn" data-shape="circle" title="Circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="currentColor"/></svg></button><button class="shape-btn" data-shape="diamond" title="Diamond"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="12" height="12" fill="currentColor" transform="rotate(45 10 10)"/></svg></button><button class="shape-btn" data-shape="rounded" title="Rounded"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="currentColor"/></svg></button></div></div>
+                <div class="field-group"><label>Eye Shape</label><div class="shape-options"><button class="eye-shape-btn active" data-eye-shape="square" title="Square"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" stroke="currentColor" stroke-width="4" fill="none"/></svg></button><button class="eye-shape-btn" data-eye-shape="circle" title="Circle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="4" fill="none"/></svg></button><button class="eye-shape-btn" data-eye-shape="rounded" title="Rounded"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="4" fill="none"/></svg></button></div></div>
+              </div>
+              <div id="tab-logo" class="cust-tab-content">
+                <div class="field-group"><label>Upload Logo</label><div class="file-upload-area" id="logoUploadArea"><i data-lucide="image-plus"></i><span>Click or drag image here</span><input type="file" id="logoInput" accept="image/*" hidden></div><div id="logoPreviewContainer" class="hidden"><img id="logoPreview" alt="Logo preview"><button id="removeLogo" class="small-btn danger">Remove</button></div></div>
+                <div class="field-group"><label>Logo Size: <span id="logoSizeValue">20</span>%</label><input type="range" id="logoSize" min="5" max="35" value="20"></div>
+                <div class="field-group inline"><label><input type="checkbox" id="logoTransparent" checked> Remove background behind logo</label></div>
+                <div class="info-banner" id="ecInfoBanner"><i data-lucide="info"></i><span>Error correction will auto-increase to High (30%) when a logo is added.</span></div>
+              </div>
+              <div id="tab-frame" class="cust-tab-content">
+                <div class="field-group"><label>Frame Style</label><select id="frameStyle"><option value="none">No Frame</option><option value="simple">Simple Border</option><option value="rounded">Rounded Border</option><option value="banner-bottom">Banner (Bottom)</option><option value="banner-top">Banner (Top)</option></select></div>
+                <div id="frameTextFields"><div class="field-group"><label>Frame Text</label><input type="text" id="frameText" placeholder="SCAN ME" value="SCAN ME"></div><div class="field-group"><label>Frame Color</label><div class="color-input-row"><input type="color" id="frameColor" value="#000000"><input type="text" id="frameColorText" value="#000000" class="color-text"></div></div></div>
+              </div>
+            </div>
+
+            <!-- Error Correction -->
+            <div class="panel-card" id="ecPanel">
+              <h3 class="panel-title"><i data-lucide="shield"></i> Error Correction</h3>
+              <div class="ec-options">
+                <button class="ec-btn" data-ec="L">L (7%)</button>
+                <button class="ec-btn active" data-ec="M">M (15%)</button>
+                <button class="ec-btn" data-ec="Q">Q (25%)</button>
+                <button class="ec-btn" data-ec="H">H (30%)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel: Preview & Export -->
+          <div class="preview-panel">
+            <div class="preview-card">
+              <div class="preview-header">
+                <h3><i data-lucide="eye"></i> Live Preview</h3>
+                <div class="preview-actions">
+                  <span id="currentTypeName" class="current-type-label">QR Code</span>
+                  <button id="invertToggle" class="small-btn" title="Toggle dark background"><i data-lucide="contrast"></i> Invert</button>
+                </div>
+              </div>
+              <div class="preview-area" id="previewArea">
+                <canvas id="previewCanvas" width="400" height="400"></canvas>
+                <div id="previewPlaceholder" class="preview-placeholder hidden"><i data-lucide="qr-code"></i><span>Enter data to generate code</span></div>
+              </div>
+              <div id="urlWarning" class="warning-banner hidden"><i data-lucide="alert-octagon"></i><span>Warning: This URL may be suspicious or unsafe!</span></div>
+            </div>
+            <div class="panel-card export-card">
+              <h3 class="panel-title"><i data-lucide="download"></i> Export</h3>
+              <div class="export-grid">
+                <button class="export-btn" id="exportPNG"><i data-lucide="image"></i><span>PNG</span></button>
+                <button class="export-btn" id="exportSVG"><i data-lucide="file-code"></i><span>SVG</span></button>
+                <button class="export-btn" id="exportPDF"><i data-lucide="file-text"></i><span>PDF</span></button>
+                <button class="export-btn" id="exportJPG"><i data-lucide="file-image"></i><span>JPG</span></button>
+                <button class="export-btn highlight" id="exportClipboard"><i data-lucide="clipboard-copy"></i><span>Copy</span></button>
+              </div>
+              <div class="field-group"><label>DPI for Raster Export</label><div class="dpi-options"><button class="dpi-btn" data-dpi="72">72</button><button class="dpi-btn active" data-dpi="300">300</button><button class="dpi-btn" data-dpi="600">600</button></div></div>
+              <div class="field-group"><label>Export Size (px)</label><input type="number" id="exportSize" value="1024" min="128" max="4096" step="128"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Batch Section -->
+      <section id="batchSection" class="section">
+        <div class="batch-layout">
+          <div class="panel-card">
+            <h3 class="panel-title"><i data-lucide="layers"></i> Batch Generation</h3>
+            <p class="panel-desc">Upload a CSV or XLSX file with a "data" column. Each row generates a unique code. All 100+ code types are supported.</p>
+            <div class="field-group"><label>Code Type</label><select id="batchCodeType"></select></div>
+            <div class="file-upload-area" id="batchUploadArea"><i data-lucide="upload-cloud"></i><span>Drop CSV/XLSX here or click to upload</span><input type="file" id="batchFileInput" accept=".csv,.xlsx,.xls" hidden></div>
+            <div id="batchProgress" class="hidden"><div class="progress-bar"><div class="progress-fill" id="batchProgressFill"></div></div><span id="batchProgressText">0 / 0</span></div>
+            <div id="batchPreview" class="hidden"><h4>Preview (first 5 rows)</h4><div id="batchPreviewTable"></div></div>
+            <button id="batchGenerate" class="primary-btn" disabled><i data-lucide="zap"></i> Generate &amp; Download ZIP</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- About/Privacy Section -->
+      <section id="aboutSection" class="section">
+        <div class="about-layout">
+          <!-- Legal Disclaimer -->
+          <div class="panel-card" style="border:1px solid rgba(255,60,60,0.25);background:rgba(255,60,60,0.04);">
+            <h3 class="panel-title" style="color:#ff3c3c;"><i data-lucide="shield-alert"></i> Legal Disclaimer & Terms of Use</h3>
+            <div class="privacy-content" style="font-size:0.88rem;line-height:1.7;">
+              <div class="privacy-feature"><div class="privacy-icon orange"><i data-lucide="book-open"></i></div><div><h4>1. Educational & Developer Use Only</h4><p>KODKAFALI is provided strictly as an educational tool and developer reference for understanding barcode and QR code encoding standards. It is <strong>not intended</strong> for producing codes that will be used on official, legal, or commercial documents without proper authorization.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon red" style="background:rgba(255,60,60,0.1);color:#ff3c3c;"><i data-lucide="ban"></i></div><div><h4>2. No Official Affiliation</h4><p>This tool has <strong>no affiliation</strong> with any government body, standards organization (AAMVA, GS1, IATA, ISO), financial institution, or postal service. Codes generated here carry no official status or validity whatsoever.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon red" style="background:rgba(255,60,60,0.1);color:#ff3c3c;"><i data-lucide="alert-octagon"></i></div><div><h4>3. Prohibition of Illegal Use</h4><p><strong>You must not use this tool to create counterfeit identification documents, fraudulent barcodes for retail, forged boarding passes, or any other code intended to deceive.</strong> Doing so may violate federal and state laws including 18 U.S.C. § 1028 (fraud related to identification documents), and equivalent laws worldwide. The developer assumes zero liability for illegal misuse.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon green"><i data-lucide="shield-check"></i></div><div><h4>4. Data Privacy</h4><p>All code generation happens 100% client-side. No data is transmitted, stored, or logged anywhere. Your browser's memory is the only place data exists — close the tab and it vanishes. No cookies, no analytics, no tracking.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon blue"><i data-lucide="scale"></i></div><div><h4>5. Limitation of Liability</h4><p>This software is provided "AS IS" with no warranty of any kind. The developer is not responsible for any damages, legal consequences, or losses resulting from the use or misuse of this tool. By using KODKAFALI you accept these terms in full.</p></div></div>
+            </div>
+          </div>
+
+          <!-- Privacy Features -->
+          <div class="panel-card">
+            <h3 class="panel-title"><i data-lucide="shield-check"></i> Zero-Server Privacy</h3>
+            <div class="privacy-content">
+              <div class="privacy-feature"><div class="privacy-icon green"><i data-lucide="wifi-off"></i></div><div><h4>No Data Leaves Your Browser</h4><p>All codes are generated entirely on your device using JavaScript. No API calls, no telemetry, no cookies.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon blue"><i data-lucide="hard-drive"></i></div><div><h4>No Server Storage</h4><p>Your data exists only in your browser's memory while the tab is open. Close the tab, and it's gone forever.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon purple"><i data-lucide="code-2"></i></div><div><h4>Open Source</h4><p>Every line of code is visible on <a href="https://github.com/emircesur" target="_blank">GitHub</a>. Audit it yourself.</p></div></div>
+              <div class="privacy-feature"><div class="privacy-icon orange"><i data-lucide="scan-line"></i></div><div><h4>URL Safety Check</h4><p>A client-side scanner checks URLs for patterns common to phishing and malicious sites before you download.</p></div></div>
+            </div>
+          </div>
+          <div class="panel-card">
+            <h3 class="panel-title"><i data-lucide="info"></i> Supported Code Types — <span id="aboutTypeCount"></span> Symbologies</h3>
+            <div id="aboutCodesTable" class="codes-table"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast -->
+    <div id="toastContainer" class="toast-container"></div>
+  </div>
+
+  <script src="js/codetypes.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/batch.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
